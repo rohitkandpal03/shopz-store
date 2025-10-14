@@ -1,53 +1,145 @@
 # ShopzStore
 
-ShopzStore is an e-commerce web application built with Next.js, TypeScript, Tailwind CSS, and Prisma. It provides a modern shopping experience with product listings, detailed product pages, and a clean UI.
+ShopzStore is a modern e-commerce web application built with Next.js 15, TypeScript, Tailwind CSS, and Prisma. It provides a complete shopping experience with user authentication, product management, and a clean, responsive UI.
 
 ## Features
 
-- Product listing and detail pages
-- Responsive design with Tailwind CSS
-- Modular component structure
-- Prisma ORM for database management
-- Sample product images and data
+- **User Authentication**: Secure sign-in/sign-out with NextAuth.js v5
+- **Product Management**: Full CRUD operations for products with image support
+- **User Management**: User registration, profiles, and role-based access
+- **Database Integration**: PostgreSQL with Prisma ORM and Neon serverless
+- **Modern UI**: Responsive design with Tailwind CSS and Radix UI components
+- **Type Safety**: Full TypeScript implementation with Zod validation
+- **Dark/Light Mode**: Theme switching with next-themes
+- **Sample Data**: Pre-populated with sample products and images
 
 ## Project Structure
 
 ```
-components/         # Reusable UI and feature components
 app/                # Next.js app directory (routing, pages)
+├── (auth)/         # Authentication pages and layouts
+├── (root)/         # Main application pages
+├── api/            # API routes for authentication
+└── layout.tsx      # Root layout with providers
+
+components/         # Reusable UI and feature components
+├── shared/         # Shared components (header, product cards)
+└── ui/             # Radix UI components (buttons, cards, etc.)
+
+lib/                # Utility functions and configurations
+├── actions/        # Server actions for user and product operations
+├── constants/      # Application constants and configuration
+└── validators.ts   # Zod schemas for form validation
+
 db/                 # Database utilities and seed scripts
-lib/                # Utility functions and constants
+├── prisma.ts       # Prisma client configuration
+├── sample-data.ts  # Sample product data
+└── seed.ts         # Database seeding script
+
 prisma/             # Prisma schema and migrations
-public/             # Static assets (images, etc.)
+├── migrations/     # Database migration files
+└── schema.prisma   # Database schema definition
+
+public/             # Static assets
+└── images/         # Product images and logos
+
+auth.ts             # NextAuth configuration
 types/              # TypeScript type definitions
 ```
 
 ## Getting Started
 
-1. **Install dependencies:**
+### Prerequisites
+
+- **Node.js**: Version 18.18 or higher (required for Prisma)
+- **npm**: Latest version
+- **PostgreSQL**: Database instance (local or cloud like Neon)
+
+1. **Clone the repository:**
+   ```sh
+   git clone <repository-url>
+   cd shopzstore
+   ```
+
+2. **Install dependencies:**
    ```sh
    npm install
    ```
-2. **Set up the database:**
-   - Configure your database connection in `prisma/schema.prisma`.
+
+3. **Set up environment variables:**
+   Create a `.env.local` file in the root directory and add:
+   ```env
+   DATABASE_URL="your_postgresql_database_url"
+   NEXTAUTH_SECRET="your_nextauth_secret"
+   NEXTAUTH_URL="http://localhost:3000"
+   NEXT_PUBLIC_APP_NAME="ShopZ Store"
+   NEXT_PUBLIC_APP_DESCRIPTION="A modern ecommerce store"
+   NEXT_PUBLIC_SERVER_URL="http://localhost:3000"
+   ```
+
+4. **Set up the database:**
+   - The project uses PostgreSQL with Neon serverless (or any PostgreSQL database)
    - Run migrations and seed data:
      ```sh
-     npx prisma migrate dev --name init
+     npx prisma migrate dev
      npx prisma db seed
      ```
-3. **Run the development server:**
+
+5. **Run the development server:**
    ```sh
    npm run dev
    ```
-4. **Open [http://localhost:3000](http://localhost:3000) in your browser.**
 
-## Scripts
+6. **Open [http://localhost:3000](http://localhost:3000) in your browser.**
+
+## Technology Stack
+
+- **Framework**: Next.js 15 with App Router
+- **Language**: TypeScript
+- **Styling**: Tailwind CSS
+- **UI Components**: Radix UI
+- **Database**: PostgreSQL with Prisma ORM
+- **Authentication**: NextAuth.js v5
+- **Validation**: Zod
+- **Icons**: Lucide React
+- **Theme**: next-themes for dark/light mode
+
+## Available Scripts
 
 - `npm run dev` — Start the development server
 - `npm run build` — Build for production
 - `npm run start` — Start the production server
-- `npx prisma migrate dev` — Run database migrations
-- `npx prisma db seed` — Seed the database
+- `npm run lint` — Run ESLint for code quality
+- `npx prisma migrate dev` — Run database migrations in development
+- `npx prisma db seed` — Seed the database with sample data
+- `npx prisma generate` — Generate Prisma client
+- `npx prisma studio` — Open Prisma Studio to view/edit database
+
+## Database Schema
+
+The application includes the following main models:
+
+- **User**: User accounts with authentication and profile information
+- **Product**: Product catalog with images, pricing, and inventory
+- **Account**: OAuth provider accounts (NextAuth integration)
+- **Session**: User sessions for authentication
+- **VerificationToken**: Email verification tokens
+
+## Authentication
+
+The application uses NextAuth.js v5 with:
+- Credentials provider for email/password authentication
+- JWT session strategy
+- Prisma adapter for database integration
+- Secure password hashing with bcrypt
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
 ## License
 

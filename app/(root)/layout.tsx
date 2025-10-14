@@ -1,9 +1,5 @@
-// import { Metadata } from "next";
-
 import Footer from "@/components/footer";
 import Header from "@/components/shared/header";
-
-// export const metadata: Metadata = { title: "Home" };
 
 export default function RootLayout({
   children,

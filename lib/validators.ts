@@ -14,3 +14,9 @@ export const insertProductSchema = z.object({
   banner: z.string().nullable(),
   price: z.string().refine((value) => /^\d+(\.\d{2})?$/.test(formatNumberWithDecimal(Number(value))), "Price must have two decimal place"),
 });
+
+//Schema for signing user in
+export const signInFormSchema = z.object({
+  email: z.email("Invalid email address"),
+  password: z.string().min(6, "Password must be at least 6 characters"),
+});
