@@ -1,19 +1,19 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import NextAuth, { NextAuthConfig } from "next-auth";
+import NextAuth from "next-auth";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import { prisma } from "./db/prisma";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { compareSync } from "bcrypt-ts-edge";
 import { cookies } from "next/headers";
-import { NextResponse } from "next/server";
+import {authConfig} from '@/auth.config';
 
-export const config: NextAuthConfig = {
+export const config = {
   pages: {
     signIn: "/sign-in",
     error: "/sign-in",
   },
   session: {
-    strategy: "jwt",
+    strategy: "jwt" as const,
     maxAge: 30 * 24 * 60 * 60,
   },
   adapter: PrismaAdapter(prisma),
@@ -43,6 +43,7 @@ export const config: NextAuthConfig = {
     }),
   ],
   callbacks: {
+    ... authConfig.callbacks,
     async session({ session, token, user, trigger }: any) {
       session.user.id = token.sub;
       session.user.role = token.role;
@@ -93,39 +94,6 @@ export const config: NextAuthConfig = {
         token.name = session.user.name;
       }
       return token;
-    },
-    authorized({ request, auth }: any) {
-      const protectedPaths = [
-        /\/shipping-address/,
-        /\/payment-method/,
-        /\/place-order/,
-        /\/profile/,
-        /\/user\/(.*)/,
-        /\/order\/(.*)/,
-        /\/admin/,
-      ];
-
-      const { pathname } = request.nextUrl;
-
-      if (!auth && protectedPaths.some((p) => p.test(pathname))) return false;
-
-      // check for session cart cookie
-      if (!request.cookies.get("sessionCartId")) {
-        //generate new session cart id cookie
-        const sessionCartId = crypto.randomUUID();
-        const newRequestHeaders = new Headers(request.headers);
-
-        const response = NextResponse.next({
-          request: {
-            headers: newRequestHeaders,
-          },
-        });
-
-        response.cookies.set("sessionCartId", sessionCartId);
-        return response;
-      } else {
-        return true;
-      }
     },
   },
 };
