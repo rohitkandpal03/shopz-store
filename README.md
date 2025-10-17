@@ -56,18 +56,21 @@ types/              # TypeScript type definitions
 - **PostgreSQL**: Database instance (local or cloud like Neon)
 
 1. **Clone the repository:**
+
    ```sh
    git clone <repository-url>
    cd shopzstore
    ```
 
 2. **Install dependencies:**
+
    ```sh
    npm install
    ```
 
 3. **Set up environment variables:**
    Create a `.env.local` file in the root directory and add:
+
    ```env
    DATABASE_URL="your_postgresql_database_url"
    NEXTAUTH_SECRET="your_nextauth_secret"
@@ -78,14 +81,17 @@ types/              # TypeScript type definitions
    ```
 
 4. **Set up the database:**
+
    - The project uses PostgreSQL with Neon serverless (or any PostgreSQL database)
    - Run migrations and seed data:
      ```sh
-     npx prisma migrate dev
+     npm generate
+     npx prisma migrate dev --name {name}
      npx prisma db seed
      ```
 
 5. **Run the development server:**
+
    ```sh
    npm run dev
    ```
@@ -128,18 +134,11 @@ The application includes the following main models:
 ## Authentication
 
 The application uses NextAuth.js v5 with:
+
 - Credentials provider for email/password authentication
 - JWT session strategy
 - Prisma adapter for database integration
 - Secure password hashing with bcrypt
-
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add some amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
 
 ## License
 
