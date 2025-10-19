@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { NextAuthConfig } from 'next-auth';
-import {NextResponse} from 'next/server';
+import { NextAuthConfig } from "next-auth";
+import { NextResponse } from "next/server";
 
 export const authConfig = {
-    providers: [],
-    callbacks: {
-        authorized({ request, auth }: any) {
+  providers: [],
+  callbacks: {
+    authorized({ request, auth }: any) {
       const protectedPaths = [
         /\/shipping-address/,
         /\/payment-method/,
@@ -38,5 +38,5 @@ export const authConfig = {
         return true;
       }
     },
-    }
+  },
 } satisfies NextAuthConfig;

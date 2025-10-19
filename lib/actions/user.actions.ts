@@ -2,12 +2,14 @@
 "use server";
 
 import { isRedirectError } from "next/dist/client/components/redirect-error";
-import { shippingAddressSchema, signInFormSchema, signUpFormSchema } from "@/lib/validators";
+import { paymentMethodSchema, shippingAddressSchema, signInFormSchema, signUpFormSchema } from "@/lib/validators";
 import { auth, signIn, signOut } from "@/auth";
 import { hashSync } from "bcrypt-ts-edge";
 import { prisma } from "@/db/prisma";
 import { formatError } from "../utils";
 import { ShippingAddress } from "@/types";
+import { getMyCart } from "./cart.action";
+import z from "zod";
 
 export async function signInWithCredentials(prevState: any, formData: FormData) {
   try {
@@ -30,6 +32,8 @@ export async function signInWithCredentials(prevState: any, formData: FormData) 
 //sing out user
 export async function signOutUser() {
   try {
+    const currentCart = await getMyCart();
+    await prisma.cart.delete({ where: { id: currentCart?.id } });
     await signOut();
   } catch (error) {
     if (isRedirectError(error)) {
@@ -101,6 +105,24 @@ export async function updateUserAddress(data: ShippingAddress) {
     });
 
     return { success: true, message: `User updated successfully` };
+  } catch (error) {
+    return { success: false, message: formatError(error) };
+  }
+}
+
+export async function updateUserPaymentMethod(data: z.infer<typeof paymentMethodSchema>) {
+  try {
+    const session = await auth();
+    const currentUser = await prisma.user.findFirst({
+      where: { id: session?.user?.id },
+    });
+    if (!currentUser) throw new Error("User not found");
+    const paymentMethod = paymentMethodSchema.parse(data);
+    await prisma.user.update({
+      where: { id: currentUser.id },
+      data: { paymentMethod: paymentMethod.type },
+    });
+    return { success: true, message: "Payment method updated successfully" };
   } catch (error) {
     return { success: false, message: formatError(error) };
   }

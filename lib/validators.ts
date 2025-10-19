@@ -1,9 +1,10 @@
 import { z } from "zod";
 import { formatNumberWithDecimal } from "./utils";
+import { PAYMENT_METHODS } from "./constants";
 
 const currency = z
   .string()
-  .refine((value) => /^\d+(\.\d{2})?$/.test(formatNumberWithDecimal(Number(value))), "Price must have two decimal place");
+  .refine((value) => /^\d+(\.\d{2})?$/.test(formatNumberWithDecimal(Number(value))), { error: "Price must have two decimal place" });
 //Schema for inserting products
 export const insertProductSchema = z.object({
   name: z.string().min(3, "Name must be at least 3 char"),
@@ -33,7 +34,7 @@ export const signUpFormSchema = z
     confirmPassword: z.string().min(6, "Confirm Password must be at least 6 characters"),
   })
   .refine((data) => data.password === data.confirmPassword, {
-    message: "Passwords don't match",
+    error: "Passwords don't match",
     path: ["confirmPassword"],
   });
 
@@ -65,4 +66,41 @@ export const shippingAddressSchema = z.object({
   country: z.string().min(2, "Country must be at least 2 char"),
   lat: z.number().optional(),
   lng: z.number().optional(),
+});
+
+export const paymentMethodSchema = z
+  .object({
+    type: z.string().min(1, "Payment Method is required"),
+  })
+  .refine((data) => PAYMENT_METHODS.includes(data.type), {
+    path: ["type"],
+    error: "Invalid payment method",
+  });
+
+export const insertOrderSchema = z.object({
+  userId: z.string().min(1, "User is required"),
+  itemsPrice: currency,
+  shippingPrice: currency,
+  taxPrice: currency,
+  totalPrice: currency,
+  paymentMethod: z.string().refine((data) => PAYMENT_METHODS.includes(data), {
+    error: "Invalid payment Method",
+  }),
+  shippingAddress: shippingAddressSchema,
+});
+
+export const insertOrderItemSchema = z.object({
+  productId: z.string(),
+  slug: z.string(),
+  image: z.string(),
+  name: z.string(),
+  price: currency,
+  qty: z.number(),
+});
+
+export const paymentResultSchema = z.object({
+  id: z.string(),
+  status: z.string(),
+  email_address: z.string(),
+  pricePaid: z.string(),
 });

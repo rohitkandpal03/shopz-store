@@ -1,19 +1,20 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import NextAuth from "next-auth";
+import NextAuth, { NextAuthConfig } from "next-auth";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import { prisma } from "./db/prisma";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { compareSync } from "bcrypt-ts-edge";
 import { cookies } from "next/headers";
-import {authConfig} from '@/auth.config';
+import { NextResponse } from "next/server";
+import { authConfig } from "./auth.config";
 
-export const config = {
+export const config: NextAuthConfig = {
   pages: {
     signIn: "/sign-in",
     error: "/sign-in",
   },
   session: {
-    strategy: "jwt" as const,
+    strategy: "jwt",
     maxAge: 30 * 24 * 60 * 60,
   },
   adapter: PrismaAdapter(prisma),
@@ -43,7 +44,7 @@ export const config = {
     }),
   ],
   callbacks: {
-    ... authConfig.callbacks,
+    ...authConfig.callbacks,
     async session({ session, token, user, trigger }: any) {
       session.user.id = token.sub;
       session.user.role = token.role;
